@@ -1,34 +1,47 @@
 package com.harshita.sweetshop.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "sweets")
 public class Sweet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-    private int price; //price per item
-    private int stock;
 
-    public int getStock() {
-        return stock;
-    }
+    private String category;
 
-    public void setStock(int stock) {
+    private Double price; // Changed from int to Double
+
+    private Integer stock;
+
+    // Constructors
+    public Sweet() {}
+
+    public Sweet(String name, String category, Double price, Integer stock) {
+        this.name = name;
+        this.category = category;
+        this.price = price;
         this.stock = stock;
     }
 
-    public int getPrice() {
-        return price;
+    // Method to reduce stock
+    public void reduceStock(Integer quantity) {
+        if (this.stock < quantity) {
+            throw new IllegalArgumentException("Insufficient stock");
+        }
+        this.stock -= quantity;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -39,11 +52,27 @@ public class Sweet {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
+    public String getCategory() {
+        return category;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
     }
 }
