@@ -2,7 +2,6 @@ package com.harshita.sweetshop.controller;
 
 import com.harshita.sweetshop.model.Order;
 import com.harshita.sweetshop.model.OrderItem;
-import com.harshita.sweetshop.model.Sweet;
 import com.harshita.sweetshop.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +24,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public Sweet getOrder(@PathVariable Long id) {
+    public Order getOrder(@PathVariable Long id) {
         return orderService.getOrder(id);
     }
 }

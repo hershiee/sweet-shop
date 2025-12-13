@@ -5,6 +5,7 @@ import com.harshita.sweetshop.model.OrderItem;
 import com.harshita.sweetshop.model.Sweet;
 import com.harshita.sweetshop.repository.OrderRepository;
 import com.harshita.sweetshop.repository.SweetRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,19 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
+    @Transactional
+    public void placeOrderForOneSweet(Long sweetId, int quantity) {
+        Sweet sweet = sweetRepository.findById(sweetId)
+                .orElseThrow(() -> new RuntimeException("Sweet not found"));
+
+        //Reduce Stock
+        int newStock = sweet.getStock() - quantity;
+        sweet.setStock(newStock);
+
+        //Save updated sweet
+        sweetRepository.save(sweet);
+    }
+
     public Order placeOrder(List<OrderItem> items) {
 
         //TODO 1: validate stock for all items
@@ -31,7 +45,7 @@ public class OrderService {
         return null; // temporary
     }
 
-    public Sweet getOrder(Long orderId) {
+    public Order getOrder(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
     }
