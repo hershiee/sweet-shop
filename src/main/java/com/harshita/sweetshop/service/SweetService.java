@@ -29,6 +29,11 @@ public class SweetService {
         return sweetRepository.save(sweet);
     }
 
+    public Sweet getSweetById(Long id) {
+        return sweetRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sweet not found with id: " + id));
+    }
+
     private void validateSweet(Sweet sweet) {
         if (sweet.getName() == null || sweet.getName().trim().isEmpty()) {
             throw new RuntimeException("Sweet name is required");
@@ -42,4 +47,6 @@ public class SweetService {
             throw new RuntimeException("Stock cannot be negative");
         }
     }
+
+
 }
