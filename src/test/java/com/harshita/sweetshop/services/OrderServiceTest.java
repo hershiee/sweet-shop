@@ -1,5 +1,6 @@
 package com.harshita.sweetshop.services;
 
+import com.harshita.sweetshop.model.Order;
 import com.harshita.sweetshop.model.Sweet;
 import com.harshita.sweetshop.repository.SweetRepository;
 import com.harshita.sweetshop.service.OrderService;
@@ -138,5 +139,31 @@ public class OrderServiceTest {
     }
 
 
+
+               // Test6: test for saving order to database
+
+    @Test
+    void placeOrder_shouldSaveOrderToDatabase() {
+        // Arrange
+        Sweet sweet = new Sweet();
+        sweet.setName("Barfi");
+        sweet.setStock(30);
+        sweet.setPrice(200.0);
+        sweet = sweetRepository.save(sweet);
+
+        Long sweetId = sweet.getId();
+        int quantity = 2;
+
+        // Act
+        Order savedOrder = orderService.placeOrderAndSave(sweetId, quantity);
+
+        // Assert
+        assertNotNull(savedOrder);
+        assertNotNull(savedOrder.getId()); // Should have ID after saving
+        assertEquals("Barfi", savedOrder.getSweetName());
+        assertEquals(2, savedOrder.getQuantity());
+        assertEquals(400.0, savedOrder.getTotalAmount()); // 200 * 2
+        assertEquals("COMPLETED", savedOrder.getStatus());
+    }
 
 }

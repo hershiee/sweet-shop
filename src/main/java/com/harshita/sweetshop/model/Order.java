@@ -2,8 +2,6 @@ package com.harshita.sweetshop.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -12,25 +10,16 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> items = new ArrayList<>();
-
+    private Long sweetId;
+    private String sweetName;
+    private Integer quantity;
     private Double totalAmount;
-
-    private String status; // PENDING, COMPLETED, CANCELLED
-
+    private String status;
     private LocalDateTime createdAt;
 
-    // Constructors
     public Order() {
         this.createdAt = LocalDateTime.now();
-        this.status = "PENDING";
-    }
-
-    // Helper method
-    public void addItem(OrderItem item) {
-        items.add(item);
-        item.setOrder(this);
+        this.status = "COMPLETED";
     }
 
     // Getters and Setters
@@ -42,12 +31,28 @@ public class Order {
         this.id = id;
     }
 
-    public List<OrderItem> getItems() {
-        return items;
+    public Long getSweetId() {
+        return sweetId;
     }
 
-    public void setItems(List<OrderItem> items) {
-        this.items = items;
+    public void setSweetId(Long sweetId) {
+        this.sweetId = sweetId;
+    }
+
+    public String getSweetName() {
+        return sweetName;
+    }
+
+    public void setSweetName(String sweetName) {
+        this.sweetName = sweetName;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
     public Double getTotalAmount() {
