@@ -22,61 +22,6 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    @Transactional
-    public void placeOrderForOneSweet(Long sweetId, int quantity) {
-        // Validate quantity
-        validateQuantity(quantity);
-
-        // Find the sweet
-        Sweet sweet = sweetRepository.findById(sweetId)
-                .orElseThrow(() -> new RuntimeException("Sweet not found"));
-
-        // Check if enough stock available
-        validateStock(sweet, quantity);
-
-        // Reduce stock
-        sweet.setStock(sweet.getStock() - quantity);
-
-        // Save updated sweet
-        sweetRepository.save(sweet);
-    }
-
-    private void validateQuantity(int quantity) {
-        if (quantity <= 0) {
-            throw new RuntimeException("Quantity must be greater than 0");
-        }
-    }
-
-    private void validateStock(Sweet sweet, int quantity) {
-        if (sweet.getStock() < quantity) {
-            throw new RuntimeException("Insufficient stock. Available: " +
-                    sweet.getStock() + ", Requested: " + quantity);
-        }
-    }
-
-
-    @Transactional
-    public Double placeOrderForOneSweetWithTotal(Long sweetId, int quantity) {
-        // Validate quantity
-        validateQuantity(quantity);
-
-        // Find the sweet
-        Sweet sweet = sweetRepository.findById(sweetId)
-                .orElseThrow(() -> new RuntimeException("Sweet not found"));
-
-        // Check if enough stock available
-        validateStock(sweet, quantity);
-
-        // Reduce stock
-        sweet.setStock(sweet.getStock() - quantity);
-
-        // Save updated sweet
-        sweetRepository.save(sweet);
-
-        // Calculate and return total
-        return sweet.getPrice() * quantity;
-    }
-
 
     @Transactional
     public Order placeOrderAndSave(Long sweetId, int quantity) {
@@ -106,6 +51,20 @@ public class OrderService {
         order.setStatus("COMPLETED");
 
         return orderRepository.save(order);
+    }
+
+    // Keep validation methods
+    private void validateQuantity(int quantity) {
+        if (quantity <= 0) {
+            throw new RuntimeException("Quantity must be greater than 0");
+        }
+    }
+
+    private void validateStock(Sweet sweet, int quantity) {
+        if (sweet.getStock() < quantity) {
+            throw new RuntimeException("Insufficient stock. Available: " +
+                    sweet.getStock() + ", Requested: " + quantity);
+        }
     }
 
     public Order placeOrder(List<OrderItem> items) {

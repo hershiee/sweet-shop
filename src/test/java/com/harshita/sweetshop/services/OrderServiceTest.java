@@ -36,7 +36,7 @@ public class OrderServiceTest {
         Long sweetId = sweet.getId();
 
         // Act - Place order
-        orderService.placeOrderForOneSweet(sweetId, 1);
+        orderService.placeOrderAndSave(sweetId, 1);
 
         // Assert - Check stock was reduced
         Sweet updatedSweet = sweetRepository.findById(sweetId).get();
@@ -60,7 +60,7 @@ public class OrderServiceTest {
 
         // Act & Assert - Try to order 10 (more than available)
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            orderService.placeOrderForOneSweet(sweetId, 10);
+            orderService.placeOrderAndSave(sweetId, 10);
         });
 
         // Check the error message
@@ -88,7 +88,7 @@ public class OrderServiceTest {
 
         // Act & Assert - Try to order 0 quantity
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            orderService.placeOrderForOneSweet(sweetId, 0);
+            orderService.placeOrderAndSave(sweetId, 0);
         });
 
         assertTrue(exception.getMessage().contains("Quantity must be greater than 0"));
@@ -110,7 +110,7 @@ public class OrderServiceTest {
 
         // Act & Assert - Try to order -5 quantity
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            orderService.placeOrderForOneSweet(sweetId, -5);
+            orderService.placeOrderAndSave(sweetId, -5);
         });
 
         assertTrue(exception.getMessage().contains("Quantity must be greater than 0"));
@@ -132,10 +132,10 @@ public class OrderServiceTest {
         int quantity = 3;
 
         // Act
-        Double totalPrice = orderService.placeOrderForOneSweetWithTotal(sweetId, quantity);
+        Order order = orderService.placeOrderAndSave(sweetId, quantity);
 
         // Assert
-        assertEquals(360.0, totalPrice);  // 120 * 3 = 360
+        assertEquals(360.0, order.getTotalAmount());  // 120 * 3 = 360
     }
 
 
