@@ -77,6 +77,37 @@ public class OrderService {
         return sweet.getPrice() * quantity;
     }
 
+
+    @Transactional
+    public Order placeOrderAndSave(Long sweetId, int quantity) {
+        // Validate quantity
+        validateQuantity(quantity);
+
+        // Find the sweet
+        Sweet sweet = sweetRepository.findById(sweetId)
+                .orElseThrow(() -> new RuntimeException("Sweet not found"));
+
+        // Check if enough stock available
+        validateStock(sweet, quantity);
+
+        // Reduce stock
+        sweet.setStock(sweet.getStock() - quantity);
+        sweetRepository.save(sweet);
+
+        // Calculate total
+        Double total = sweet.getPrice() * quantity;
+
+        // Create and save order
+        Order order = new Order();
+        order.setSweetId(sweet.getId());
+        order.setSweetName(sweet.getName());
+        order.setQuantity(quantity);
+        order.setTotalAmount(total);
+        order.setStatus("COMPLETED");
+
+        return orderRepository.save(order);
+    }
+
     public Order placeOrder(List<OrderItem> items) {
 
         //TODO 1: validate stock for all items
