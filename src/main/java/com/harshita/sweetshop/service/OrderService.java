@@ -27,6 +27,12 @@ public class OrderService {
         Sweet sweet = sweetRepository.findById(sweetId)
                 .orElseThrow(() -> new RuntimeException("Sweet not found"));
 
+        // NEW: Check if enough stock available
+        if (sweet.getStock() < quantity) {
+            throw new RuntimeException("Insufficient stock. Available: " +
+                    sweet.getStock() + ", Requested: " + quantity);
+        }
+
         //Reduce Stock
         int newStock = sweet.getStock() - quantity;
         sweet.setStock(newStock);
