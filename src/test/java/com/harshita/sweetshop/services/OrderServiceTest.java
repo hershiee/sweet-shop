@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional //rolls back database changes after each test
@@ -31,7 +31,7 @@ public class OrderServiceTest {
 
         Long sweetId = sweet.getId();
 
-        // Act - Place order (this method doesn't exist yet - will fail!)
+        // Act - Place order
         orderService.placeOrderForOneSweet(sweetId, 1);
 
         // Assert - Check stock was reduced
@@ -39,6 +39,29 @@ public class OrderServiceTest {
         assertEquals(9, updatedSweet.getStock()); // 10 - 1 = 9
     }
 
+    @Test
+    void placeOrder_shouldThrowExceptionWhenStockInsufficient() {
+        // Arrange
+        Sweet sweet = new Sweet();
+        sweet.setName("Gulab Jamun");
+        sweet.setStock(5);  // Only 5 in stock
+        sweet.setPrice(150.0);
+        sweet = sweetRepository.save(sweet);
+
+        Long sweetId = sweet.getId();
+
+        // Act & Assert - Try to order 10 (more than available)
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            orderService.placeOrderForOneSweet(sweetId, 10);
+        });
+
+        // Check the error message
+        assertTrue(exception.getMessage().contains("Insufficient stock"));
+
+        // Verify stock didn't change
+        Sweet unchangedSweet = sweetRepository.findById(sweetId).get();
+        assertEquals(5, unchangedSweet.getStock());
+    }
 
 
 
