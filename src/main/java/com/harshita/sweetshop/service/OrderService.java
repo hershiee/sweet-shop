@@ -24,6 +24,11 @@ public class OrderService {
 
     @Transactional
     public void placeOrderForOneSweet(Long sweetId, int quantity) {
+
+        if (quantity <= 0) {
+            throw new RuntimeException("Quantity must be greater than 0");
+        }
+        // Validate quantity
         Sweet sweet = sweetRepository.findById(sweetId)
                 .orElseThrow(() -> new RuntimeException("Sweet not found"));
 
