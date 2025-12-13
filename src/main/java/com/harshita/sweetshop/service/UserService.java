@@ -51,6 +51,20 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User loginUser(String email, String password) {
+        // Find user by email
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+
+        // Verify password using BCrypt
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
+
+        // Return user if credentials are valid
+        return user;
+    }
+
     private void validateEmail(String email) {
         if (email == null || !EMAIL_PATTERN.matcher(email).matches()) {
             throw new RuntimeException("Invalid email format");
