@@ -56,6 +56,16 @@ public class SweetService {
         return sweetRepository.save(existingSweet);
     }
 
+    @Transactional
+    public void deleteSweet(Long id) {
+        // Check if sweet exists
+        Sweet sweet = sweetRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sweet not found with id: " + id));
+
+        // Delete the sweet
+        sweetRepository.delete(sweet);
+    }
+
     private void validateSweet(Sweet sweet) {
         if (sweet.getName() == null || sweet.getName().trim().isEmpty()) {
             throw new RuntimeException("Sweet name is required");
