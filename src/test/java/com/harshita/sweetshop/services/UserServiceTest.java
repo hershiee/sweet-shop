@@ -86,4 +86,79 @@ class UserServiceTest {
 
         assertTrue(exception.getMessage().contains("Password must be at least 6 characters"));
     }
+
+    @Test
+    void loginUser_shouldReturnUserWhenCredentialsAreValid() {
+        // Arrange
+        userService = new UserService(userRepository);
+
+        String email = "alice@example.com";
+        String password = "securepass123";
+
+        // Register user first
+        userService.registerUser(email, password, "Alice Smith");
+
+        // Act
+        User loggedInUser = userService.loginUser(email, password);
+
+        // Assert
+        assertNotNull(loggedInUser);
+        assertEquals(email, loggedInUser.getEmail());
+        assertEquals("Alice Smith", loggedInUser.getName());
+    }
+
+    @Test
+    void loginUser_shouldThrowExceptionWhenEmailNotFound() {
+        // Arrange
+        userService = new UserService(userRepository);
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            userService.loginUser("nonexistent@example.com", "password123");
+        });
+
+        assertTrue(exception.getMessage().contains("Invalid email or password"));
+    }
+
+    @Test
+    void loginUser_shouldThrowExceptionWhenPasswordIsIncorrect() {
+        // Arrange
+        userService = new UserService(userRepository);
+
+        String email = "bob@example.com";
+        String correctPassword = "correctpass123";
+
+        // Register user
+        userService.registerUser(email, correctPassword, "Bob Jones");
+
+        // Act & Assert - Try with wrong password
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            userService.loginUser(email, "wrongpassword");
+        });
+
+        assertTrue(exception.getMessage().contains("Invalid email or password"));
+    }
+
+    @Test
+    void loginUser_shouldWorkWithEncryptedPassword() {
+        // Arrange
+        userService = new UserService(userRepository);
+
+        String email = "charlie@example.com";
+        String password = "mypassword456";
+
+        // Register user (password gets encrypted)
+        User registered = userService.registerUser(email, password, "Charlie Brown");
+
+        // Verify password is encrypted in database
+        User userInDb = userRepository.findByEmail(email).get();
+        assertNotEquals(password, userInDb.getPassword());
+
+        // Act - Login with plain password should still work
+        User loggedIn = userService.loginUser(email, password);
+
+        // Assert
+        assertNotNull(loggedIn);
+        assertEquals(email, loggedIn.getEmail());
+    }
 }
