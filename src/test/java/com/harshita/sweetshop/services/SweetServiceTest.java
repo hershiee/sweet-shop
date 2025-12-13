@@ -132,4 +132,42 @@ class SweetServiceTest {
 
         assertTrue(exception.getMessage().contains("Stock cannot be negative"));
     }
+
+    @Test
+    void getSweet_shouldReturnSweetById() {
+        // Arrange
+        sweetService = new SweetService(sweetRepository);
+
+        Sweet sweet = new Sweet();
+        sweet.setName("Petha");
+        sweet.setPrice(120.0);
+        sweet.setStock(80);
+        sweet.setCategory("Traditional");
+        Sweet savedSweet = sweetRepository.save(sweet);
+
+        Long sweetId = savedSweet.getId();
+
+        // Act
+        Sweet retrievedSweet = sweetService.getSweetById(sweetId);
+
+        // Assert
+        assertNotNull(retrievedSweet);
+        assertEquals(sweetId, retrievedSweet.getId());
+        assertEquals("Petha", retrievedSweet.getName());
+        assertEquals(120.0, retrievedSweet.getPrice());
+        assertEquals(80, retrievedSweet.getStock());
+    }
+
+    @Test
+    void getSweet_shouldThrowExceptionWhenSweetNotFound() {
+        // Arrange
+        sweetService = new SweetService(sweetRepository);
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            sweetService.getSweetById(99999L);
+        });
+
+        assertTrue(exception.getMessage().contains("Sweet not found"));
+    }
 }
