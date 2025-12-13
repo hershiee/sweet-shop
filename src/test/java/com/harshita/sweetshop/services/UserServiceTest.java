@@ -1,0 +1,88 @@
+package com.harshita.sweetshop.services;
+
+import com.harshita.sweetshop.model.User;
+import com.harshita.sweetshop.repository.UserRepository;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+@Transactional
+class UserServiceTest {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    private UserService userService;
+
+    @Test
+    void registerUser_shouldSaveUserWithEncryptedPassword() {
+        // Arrange
+        userService = new UserService(userRepository);
+
+        String email = "john@example.com";
+        String plainPassword = "password123";
+        String name = "John Doe";
+
+        // Act
+        User registeredUser = userService.registerUser(email, plainPassword, name);
+
+        // Assert
+        assertNotNull(registeredUser);
+        assertNotNull(registeredUser.getId());
+        assertEquals(email, registeredUser.getEmail());
+        assertEquals(name, registeredUser.getName());
+        assertEquals("USER", registeredUser.getRole());
+
+        // Password should be encrypted (not plain text)
+        assertNotEquals(plainPassword, registeredUser.getPassword());
+        assertTrue(registeredUser.getPassword().length() > 20); // BCrypt hashes are long
+    }
+
+    @Test
+    void registerUser_shouldThrowExceptionWhenEmailAlreadyExists() {
+        // Arrange
+        userService = new UserService(userRepository);
+
+        String email = "duplicate@example.com";
+
+        // First registration
+        userService.registerUser(email, "password123", "First User");
+
+        // Act & Assert - Try to register again with same email
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            userService.registerUser(email, "password456", "Second User");
+        });
+
+        assertTrue(exception.getMessage().contains("Email already registered"));
+    }
+
+    @Test
+    void registerUser_shouldThrowExceptionWhenEmailIsInvalid() {
+        // Arrange
+        userService = new UserService(userRepository);
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            userService.registerUser("invalid-email", "password123", "Test User");
+        });
+
+        assertTrue(exception.getMessage().contains("Invalid email format"));
+    }
+
+    @Test
+    void registerUser_shouldThrowExceptionWhenPasswordIsTooShort() {
+        // Arrange
+        userService = new UserService(userRepository);
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            userService.registerUser("test@example.com", "123", "Test User");
+        });
+
+        assertTrue(exception.getMessage().contains("Password must be at least 6 characters"));
+    }
+}
