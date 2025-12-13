@@ -5,7 +5,7 @@ import com.harshita.sweetshop.model.OrderItem;
 import com.harshita.sweetshop.model.Sweet;
 import com.harshita.sweetshop.repository.OrderRepository;
 import com.harshita.sweetshop.repository.SweetRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
