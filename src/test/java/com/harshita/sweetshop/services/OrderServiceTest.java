@@ -72,7 +72,7 @@ public class OrderServiceTest {
 
 
 
-                     // Test3: Zero quantity throws exception
+                     // Test3: add failing tests for invalid quantity validation
 
     @Test
     void placeOrder_shouldThrowExceptionWhenQuantityIsZero() {
@@ -88,6 +88,25 @@ public class OrderServiceTest {
         // Act & Assert - Try to order 0 quantity
         Exception exception = assertThrows(RuntimeException.class, () -> {
             orderService.placeOrderForOneSweet(sweetId, 0);
+        });
+
+        assertTrue(exception.getMessage().contains("Quantity must be greater than 0"));
+    }
+
+    @Test
+    void placeOrder_shouldThrowExceptionWhenQuantityIsNegative() {
+        // Arrange
+        Sweet sweet = new Sweet();
+        sweet.setName("Ladoo");
+        sweet.setStock(15);
+        sweet.setPrice(80.0);
+        sweet = sweetRepository.save(sweet);
+
+        Long sweetId = sweet.getId();
+
+        // Act & Assert - Try to order -5 quantity
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            orderService.placeOrderForOneSweet(sweetId, -5);
         });
 
         assertTrue(exception.getMessage().contains("Quantity must be greater than 0"));
