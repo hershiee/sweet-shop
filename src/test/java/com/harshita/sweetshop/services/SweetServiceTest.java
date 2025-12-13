@@ -170,4 +170,77 @@ class SweetServiceTest {
 
         assertTrue(exception.getMessage().contains("Sweet not found"));
     }
+
+    @Test
+    void updateSweet_shouldUpdateSweetDetails() {
+        // Arrange
+        sweetService = new SweetService(sweetRepository);
+
+        Sweet sweet = new Sweet();
+        sweet.setName("Balushahi");
+        sweet.setPrice(150.0);
+        sweet.setStock(40);
+        sweet.setCategory("Traditional");
+        Sweet savedSweet = sweetRepository.save(sweet);
+
+        Long sweetId = savedSweet.getId();
+
+        // Modify the sweet
+        savedSweet.setName("Balushahi Premium");
+        savedSweet.setPrice(200.0);
+        savedSweet.setStock(50);
+
+        // Act
+        Sweet updatedSweet = sweetService.updateSweet(sweetId, savedSweet);
+
+        // Assert
+        assertNotNull(updatedSweet);
+        assertEquals(sweetId, updatedSweet.getId());
+        assertEquals("Balushahi Premium", updatedSweet.getName());
+        assertEquals(200.0, updatedSweet.getPrice());
+        assertEquals(50, updatedSweet.getStock());
+    }
+
+    @Test
+    void updateSweet_shouldThrowExceptionWhenSweetNotFound() {
+        // Arrange
+        sweetService = new SweetService(sweetRepository);
+
+        Sweet sweet = new Sweet();
+        sweet.setName("Nonexistent");
+        sweet.setPrice(100.0);
+        sweet.setStock(10);
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            sweetService.updateSweet(99999L, sweet);
+        });
+
+        assertTrue(exception.getMessage().contains("Sweet not found"));
+    }
+
+    @Test
+    void updateSweet_shouldValidateUpdatedData() {
+        // Arrange
+        sweetService = new SweetService(sweetRepository);
+
+        Sweet sweet = new Sweet();
+        sweet.setName("Chikki");
+        sweet.setPrice(80.0);
+        sweet.setStock(30);
+        Sweet savedSweet = sweetRepository.save(sweet);
+
+        Long sweetId = savedSweet.getId();
+
+        // Try to update with invalid price
+        savedSweet.setPrice(-100.0);
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            sweetService.updateSweet(sweetId, savedSweet);
+        });
+
+        assertTrue(exception.getMessage().contains("Price must be greater than 0"));
+    }
+
 }
