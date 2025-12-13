@@ -113,5 +113,27 @@ public class OrderServiceTest {
     }
 
 
+                        // Test4: test for total price calculation
+
+    @Test
+    void placeOrder_shouldCalculateTotalPrice() {
+        // Arrange
+        Sweet sweet = new Sweet();
+        sweet.setName("Rasgulla");
+        sweet.setStock(50);
+        sweet.setPrice(120.0);  // Price per item
+        sweet = sweetRepository.save(sweet);
+
+        Long sweetId = sweet.getId();
+        int quantity = 3;
+
+        // Act
+        Double totalPrice = orderService.placeOrderForOneSweetWithTotal(sweetId, quantity);
+
+        // Assert
+        assertEquals(360.0, totalPrice);  // 120 * 3 = 360
+    }
+
+
 
 }
