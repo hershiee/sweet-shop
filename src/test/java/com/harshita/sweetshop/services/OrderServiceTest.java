@@ -20,6 +20,9 @@ public class OrderServiceTest {
     @Autowired
     private SweetRepository sweetRepository;
 
+
+                     // Test 1: Stock reduction
+
     @Test
     void placeOrder_shouldReduceStock() {
         // Arrange - Create and save a sweet to database
@@ -38,6 +41,10 @@ public class OrderServiceTest {
         Sweet updatedSweet = sweetRepository.findById(sweetId).get();
         assertEquals(9, updatedSweet.getStock()); // 10 - 1 = 9
     }
+
+
+
+                    // Test 2: Insufficient stock throws exception
 
     @Test
     void placeOrder_shouldThrowExceptionWhenStockInsufficient() {
@@ -65,6 +72,26 @@ public class OrderServiceTest {
 
 
 
+                     // Test3: Zero quantity throws exception
+
+    @Test
+    void placeOrder_shouldThrowExceptionWhenQuantityIsZero() {
+        // Arrange
+        Sweet sweet = new Sweet();
+        sweet.setName("Jalebi");
+        sweet.setStock(20);
+        sweet.setPrice(100.0);
+        sweet = sweetRepository.save(sweet);
+
+        Long sweetId = sweet.getId();
+
+        // Act & Assert - Try to order 0 quantity
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            orderService.placeOrderForOneSweet(sweetId, 0);
+        });
+
+        assertTrue(exception.getMessage().contains("Quantity must be greater than 0"));
+    }
 
 
 
