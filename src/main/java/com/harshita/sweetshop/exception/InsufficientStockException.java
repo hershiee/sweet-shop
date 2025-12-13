@@ -1,4 +1,4 @@
-package com.harshita.sweetshop.exceptionHandler;
+package com.harshita.sweetshop.exception;
 
 public class InsufficientStockException extends RuntimeException {
 

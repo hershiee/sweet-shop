@@ -1,9 +1,8 @@
-package com.harshita.sweetshop.services;
+package com.harshita.sweetshop.service;
 
 import com.harshita.sweetshop.model.Order;
 import com.harshita.sweetshop.model.Sweet;
 import com.harshita.sweetshop.repository.SweetRepository;
-import com.harshita.sweetshop.service.OrderService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
