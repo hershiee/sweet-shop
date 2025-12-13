@@ -243,4 +243,41 @@ class SweetServiceTest {
         assertTrue(exception.getMessage().contains("Price must be greater than 0"));
     }
 
+    @Test
+    void deleteSweet_shouldDeleteSweet() {
+        // Arrange
+        sweetService = new SweetService(sweetRepository);
+
+        Sweet sweet = new Sweet();
+        sweet.setName("Motichoor Ladoo");
+        sweet.setPrice(180.0);
+        sweet.setStock(45);
+        sweet.setCategory("Traditional");
+        Sweet savedSweet = sweetRepository.save(sweet);
+
+        Long sweetId = savedSweet.getId();
+
+        // Verify it exists
+        assertTrue(sweetRepository.findById(sweetId).isPresent());
+
+        // Act
+        sweetService.deleteSweet(sweetId);
+
+        // Assert
+        assertFalse(sweetRepository.findById(sweetId).isPresent());
+    }
+
+    @Test
+    void deleteSweet_shouldThrowExceptionWhenSweetNotFound() {
+        // Arrange
+        sweetService = new SweetService(sweetRepository);
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            sweetService.deleteSweet(99999L);
+        });
+
+        assertTrue(exception.getMessage().contains("Sweet not found"));
+    }
+
 }
