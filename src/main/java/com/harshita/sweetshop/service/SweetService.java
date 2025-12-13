@@ -34,6 +34,28 @@ public class SweetService {
                 .orElseThrow(() -> new RuntimeException("Sweet not found with id: " + id));
     }
 
+    @Transactional
+    public Sweet updateSweet(Long id, Sweet updatedSweet) {
+        // Check if sweet exists
+        Sweet existingSweet = sweetRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sweet not found with id: " + id));
+
+        // Validate updated data
+        validateSweet(updatedSweet);
+
+        // Update fields
+        existingSweet.setName(updatedSweet.getName());
+        existingSweet.setPrice(updatedSweet.getPrice());
+        existingSweet.setStock(updatedSweet.getStock());
+
+        if (updatedSweet.getCategory() != null) {
+            existingSweet.setCategory(updatedSweet.getCategory());
+        }
+
+        // Save and return
+        return sweetRepository.save(existingSweet);
+    }
+
     private void validateSweet(Sweet sweet) {
         if (sweet.getName() == null || sweet.getName().trim().isEmpty()) {
             throw new RuntimeException("Sweet name is required");
