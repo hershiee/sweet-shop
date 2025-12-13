@@ -166,4 +166,40 @@ public class OrderServiceTest {
         assertEquals("COMPLETED", savedOrder.getStatus());
     }
 
+
+                // Test7: tests for retrieving order by ID
+
+    @Test
+    void getOrder_shouldReturnOrderById() {
+        // Arrange - Create and save an order
+        Sweet sweet = new Sweet();
+        sweet.setName("Soan Papdi");
+        sweet.setStock(40);
+        sweet.setPrice(180.0);
+        sweet = sweetRepository.save(sweet);
+
+        Order placedOrder = orderService.placeOrderAndSave(sweet.getId(), 3);
+        Long orderId = placedOrder.getId();
+
+        // Act
+        Order retrievedOrder = orderService.getOrderById(orderId);
+
+        // Assert
+        assertNotNull(retrievedOrder);
+        assertEquals(orderId, retrievedOrder.getId());
+        assertEquals("Soan Papdi", retrievedOrder.getSweetName());
+        assertEquals(3, retrievedOrder.getQuantity());
+        assertEquals(540.0, retrievedOrder.getTotalAmount());
+    }
+
+    @Test
+    void getOrder_shouldThrowExceptionWhenOrderNotFound() {
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            orderService.getOrderById(99999L);
+        });
+
+        assertTrue(exception.getMessage().contains("Order not found"));
+    }
+
 }
