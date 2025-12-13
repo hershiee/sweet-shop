@@ -72,7 +72,7 @@ public class OrderServiceTest {
 
 
 
-                     // Test3: add failing tests for invalid quantity validation
+                     // Test3: add failing tests for zero quantity
 
     @Test
     void placeOrder_shouldThrowExceptionWhenQuantityIsZero() {
@@ -92,6 +92,9 @@ public class OrderServiceTest {
 
         assertTrue(exception.getMessage().contains("Quantity must be greater than 0"));
     }
+
+
+            // Test 4: add failing tests for invalid quantity
 
     @Test
     void placeOrder_shouldThrowExceptionWhenQuantityIsNegative() {
@@ -113,7 +116,7 @@ public class OrderServiceTest {
     }
 
 
-                        // Test4: test for total price calculation
+                        // Test5: test for total price calculation
 
     @Test
     void placeOrder_shouldCalculateTotalPrice() {

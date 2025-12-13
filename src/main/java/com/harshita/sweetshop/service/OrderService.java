@@ -24,26 +24,57 @@ public class OrderService {
 
     @Transactional
     public void placeOrderForOneSweet(Long sweetId, int quantity) {
-
-        if (quantity <= 0) {
-            throw new RuntimeException("Quantity must be greater than 0");
-        }
         // Validate quantity
+        validateQuantity(quantity);
+
+        // Find the sweet
         Sweet sweet = sweetRepository.findById(sweetId)
                 .orElseThrow(() -> new RuntimeException("Sweet not found"));
 
-        // NEW: Check if enough stock available
+        // Check if enough stock available
+        validateStock(sweet, quantity);
+
+        // Reduce stock
+        sweet.setStock(sweet.getStock() - quantity);
+
+        // Save updated sweet
+        sweetRepository.save(sweet);
+    }
+
+    private void validateQuantity(int quantity) {
+        if (quantity <= 0) {
+            throw new RuntimeException("Quantity must be greater than 0");
+        }
+    }
+
+    private void validateStock(Sweet sweet, int quantity) {
         if (sweet.getStock() < quantity) {
             throw new RuntimeException("Insufficient stock. Available: " +
                     sweet.getStock() + ", Requested: " + quantity);
         }
+    }
 
-        //Reduce Stock
-        int newStock = sweet.getStock() - quantity;
-        sweet.setStock(newStock);
 
-        //Save updated sweet
+    @Transactional
+    public Double placeOrderForOneSweetWithTotal(Long sweetId, int quantity) {
+        // Validate quantity
+        validateQuantity(quantity);
+
+        // Find the sweet
+        Sweet sweet = sweetRepository.findById(sweetId)
+                .orElseThrow(() -> new RuntimeException("Sweet not found"));
+
+        // Check if enough stock available
+        validateStock(sweet, quantity);
+
+        // Reduce stock
+        sweet.setStock(sweet.getStock() - quantity);
+
+        // Save updated sweet
         sweetRepository.save(sweet);
+
+        // Calculate and return total
+        return sweet.getPrice() * quantity;
     }
 
     public Order placeOrder(List<OrderItem> items) {
