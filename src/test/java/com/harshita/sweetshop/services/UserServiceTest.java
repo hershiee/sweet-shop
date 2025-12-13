@@ -2,6 +2,7 @@ package com.harshita.sweetshop.services;
 
 import com.harshita.sweetshop.model.User;
 import com.harshita.sweetshop.repository.UserRepository;
+import com.harshita.sweetshop.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
