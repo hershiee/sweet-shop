@@ -139,28 +139,34 @@ git clone https://github.com/hershiee/sweet-shop.git
 cd sweet-shop
 ```
 
-### 2. Database Setup
 
-#### Option A: PostgreSQL (Production)
+## 🗄️ Database Configuration
+
+### Development (H2 - In Memory)
+The application uses H2 in-memory database for development and testing.
+
+**Access H2 Console:**
+1. Start application: `.\mvnw spring-boot:run`
+2. Open: http://localhost:8080/h2-console
+3. JDBC URL: `jdbc:h2:mem:sweetshopdb`
+4. Username: `sa`
+5. Password: (empty)
+
+### Production (PostgreSQL)
+For production deployment, the application supports PostgreSQL.
+
+**Setup:**
 ```bash
 # Create database
 createdb sweetshop
 
-# Or using psql
-psql -U postgres
-CREATE DATABASE sweetshop;
-\q
+# Run with production profile
+.\mvnw spring-boot:run -Dspring.profiles.active=prod
 ```
 
-Update `src/main/resources/application.properties`:
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/sweetshop
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-```
-
-#### Option B: H2 (Quick Testing)
-No setup needed! H2 runs in-memory for tests.
+**Environment Variables:**
+- `DB_PASSWORD`: PostgreSQL password
+- `JWT_SECRET`: JWT signing secret (production)
 
 ### 3. Build the Project
 ```bash
@@ -516,6 +522,197 @@ This project follows **strict Test-Driven Development (TDD)**:
 Every feature was developed using this cycle, as evidenced in the commit history.
 
 ---
+
+## 🌐 Frontend Application
+
+### Technology Stack
+- **React 18.2.0** - Modern UI library
+- **React Router v6** - Client-side routing
+- **Axios** - HTTP client for API communication
+- **CSS3** - Custom styling with gradients and animations
+
+### Features
+
+#### ✨ User Features
+- User registration with email validation
+- Login with JWT authentication
+- Browse all available sweets
+- Search sweets by name
+- Filter sweets by category
+- Purchase sweets with quantity selection
+- Real-time stock updates
+- Responsive design (mobile-friendly)
+
+#### 🛠️ Admin Features
+- Add new sweets
+- Edit existing sweets
+- Delete sweets
+- View all sweets in table format
+- Full CRUD operations
+- Stock management
+
+### Setup & Installation
+
+#### 1. Navigate to Frontend Directory
+```bash
+cd frontend
+```
+
+#### 2. Install Dependencies
+```bash
+npm install
+```
+
+#### 3. Start Development Server
+```bash
+npm start
+```
+
+The application will start on: **http://localhost:3000**
+
+### Running the Complete Application
+
+You need to run both backend and frontend simultaneously:
+
+#### Terminal 1 - Backend
+```bash
+# In project root directory
+.\mvnw spring-boot:run
+```
+#### Terminal 2 - Frontend
+```bash
+# In frontend directory
+cd frontend
+npm start
+```
+
+### Application URLs
+
+- **Frontend (React):** http://localhost:3000
+- **Backend API:** http://localhost:8080
+- **H2 Console:** http://localhost:8080/h2-console
+
+---
+
+## 🚀 Quick Start Guide
+
+### 1. Start Backend
+```bash
+.\mvnw spring-boot:run
+```
+### 2. Start Frontend
+```bash
+cd frontend
+npm start
+```
+
+### 3. Access Application
+Open http://localhost:3000 in your browser
+
+### 4. Register & Login
+1. Click "Register" and create an account
+2. Login with your credentials
+3. Browse and purchase sweets
+
+### 5. Admin Access (Optional)
+To access admin features:
+1. Login to H2 Console: http://localhost:8080/h2-console
+2. Run SQL: `UPDATE USERS SET ROLE = 'ADMIN' WHERE EMAIL = 'your-email@example.com';`
+3. Logout and login again
+4. You'll see "Admin Panel" option in navbar
+
+---
+
+### Frontend Environment
+
+The frontend is configured to communicate with the backend via a proxy:
+
+**package.json:**
+```json
+"proxy": "http://localhost:8080"
+```
+
+### CORS Configuration
+
+The backend is configured to accept requests from the frontend:
+
+**WebConfig.java:**
+```java
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")
+                .allowedOrigins("http://localhost:3000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+    }
+}
+```
+
+---
+
+## 📦 Project Structure
+```
+sweet-shop/
+├── frontend/                        # React Frontend Application
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Auth/               # Login & Registration
+│   │   │   ├── Dashboard/          # Sweet browsing & purchase
+│   │   │   ├── Admin/              # Admin CRUD operations
+│   │   │   └── Navbar/             # Navigation bar
+│   │   ├── services/
+│   │   │   ├── api.js             # API calls with axios
+│   │   │   └── auth.js            # Auth utilities
+│   │   ├── App.js                 # Main app with routing
+│   │   └── App.css                # Global styles
+│   ├── package.json
+│   └── README.md
+├── src/                            # Backend Spring Boot Application
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/harshita/sweetshop/
+│   │   │       ├── config/        # Configuration classes
+│   │   │       ├── controller/    # REST Controllers
+│   │   │       ├── service/       # Business Logic
+│   │   │       ├── repository/    # Data Access
+│   │   │       ├── model/         # Entity classes
+│   │   │       ├── dto/           # Data Transfer Objects
+│   │   │       └── exception/     # Exception handling
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       └── application-prod.properties
+│   └── test/
+├── screenshots/                    # Application screenshots
+├── pom.xml
+└── README.md
+```
+
+---
+
+## 🎨 UI/UX Highlights
+
+### Design Features
+- **Modern Gradient Design:** Purple gradient theme throughout
+- **Smooth Animations:** Fade-in, slide-up, and hover effects
+- **Responsive Layout:** Works on desktop, tablet, and mobile
+- **User Feedback:** Loading states, error messages, success notifications
+- **Intuitive Navigation:** Clear routing and protected routes
+- **Accessibility:** Proper form labels and semantic HTML
+
+### Color Scheme
+- Primary: `#667eea` (Purple)
+- Secondary: `#764ba2` (Deep Purple)
+- Background: `#f5f5f5` (Light Gray)
+- Success: `#4caf50` (Green)
+- Error: `#f44336` (Red)
+
+---
+
+
 
 ## 🤖 My AI Usage
 
