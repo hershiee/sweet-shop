@@ -1,14 +1,14 @@
 package com.harshita.sweetshop.service;
 
+import com.harshita.sweetshop.exception.ResourceNotFoundException;
+import com.harshita.sweetshop.exception.ValidationException;
+import com.harshita.sweetshop.exception.InsufficientStockException;
 import com.harshita.sweetshop.model.Order;
-import com.harshita.sweetshop.model.OrderItem;
 import com.harshita.sweetshop.model.Sweet;
 import com.harshita.sweetshop.repository.OrderRepository;
 import com.harshita.sweetshop.repository.SweetRepository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderService {
@@ -22,27 +22,20 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-
     @Transactional
     public Order placeOrderAndSave(Long sweetId, int quantity) {
-        // Validate quantity
         validateQuantity(quantity);
 
-        // Find the sweet
         Sweet sweet = sweetRepository.findById(sweetId)
-                .orElseThrow(() -> new RuntimeException("Sweet not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sweet not found with id: " + sweetId));
 
-        // Check if enough stock available
         validateStock(sweet, quantity);
 
-        // Reduce stock
         sweet.setStock(sweet.getStock() - quantity);
         sweetRepository.save(sweet);
 
-        // Calculate total
         Double total = sweet.getPrice() * quantity;
 
-        // Create and save order
         Order order = new Order();
         order.setSweetId(sweet.getId());
         order.setSweetName(sweet.getName());
@@ -53,34 +46,23 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    // Keep validation methods
+    public Order getOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
+    }
+
     private void validateQuantity(int quantity) {
         if (quantity <= 0) {
-            throw new RuntimeException("Quantity must be greater than 0");
+            throw new ValidationException("Quantity must be greater than 0");
         }
     }
 
     private void validateStock(Sweet sweet, int quantity) {
         if (sweet.getStock() < quantity) {
-            throw new RuntimeException("Insufficient stock. Available: " +
-                    sweet.getStock() + ", Requested: " + quantity);
+            throw new InsufficientStockException(
+                    String.format("Insufficient stock for %s. Available: %d, Requested: %d",
+                            sweet.getName(), sweet.getStock(), quantity)
+            );
         }
     }
-
-    public Order placeOrder(List<OrderItem> items) {
-
-        //TODO 1: validate stock for all items
-        //TODO 2: calculate total amount
-        //TODO 3: reduce stock
-        //TODO 4: save order
-
-        return null; // temporary
-    }
-
-    public Order getOrderById(Long orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found with id: " + orderId));
-    }
-
-
 }
