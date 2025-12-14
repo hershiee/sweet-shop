@@ -110,7 +110,7 @@ sweetshop/
 │   └── SweetShopApplication.java        # Main application
 ├── src/main/resources/
 │   ├── application.properties           # Development config
-│   └── application-test.properties      # Test config
+│   └── application-prod.properties      # Test config
 ├── src/test/java/com/harshita/sweetshop/
 │   ├── controller/
 │   │   └── AuthControllerTest.java      # Integration tests
