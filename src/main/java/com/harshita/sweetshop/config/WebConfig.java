@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
                     "http://localhost:3000",           // Local development
                     "https://*.railway.app",           // Railway deployments
                     "https://*.vercel.app",            // Vercel deployments
-                    "https://your-custom-domain.com"   // Your custom domain
+                    "https://sweet-shop-production-8c0f.up.railway.app"   // Your custom domain
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
