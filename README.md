@@ -871,7 +871,7 @@ The result: **Better code, faster learning, and genuine understanding** of what 
 
 ### Test Results
 ![All Tests Passing](screenshots/tests-passing.png)
-*36/356tests passing with 100% success rate*
+*36/36 tests passing with 100% success rate*
 
 ---
 
